@@ -1,0 +1,195 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+
+    body{
+        margin: 0;
+    }
+    #input{
+        margin-top: 3%;
+        text-align: center;
+        width: 100%;
+        height: 50px;
+    }
+
+    #band{
+        width: 40%;
+        display: inline;
+        float: left;
+    }
+
+    #band img{
+        width: 100%;
+    }
+
+    #band_name{
+        font-size: 2em;
+        text-align: center;
+    }
+
+    #album_div{
+        width: 60%;
+        display: inline-block;
+    }
+
+    #album_div img{
+        width: 33%;
+    }
+
+
+    </style>
+</head>
+<body>
+
+
+    <div id = "input">
+        <input type="text">
+        <button id = 'submit'>Click me</button>
+    </div>
+
+<!--     <div id = "band">
+    <img id = "band_img">
+    <h3 id = "band_name"></h3>
+    </div> -->
+
+    <div id = "band"></div>
+    <div id = "album_div"></div>
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <script>
+
+        // var url = "http://omdbapi.com/?t=Pulp%20Fiction";
+        var button = document.getElementById('submit');
+
+    $('body').keydown(function (e){
+        if(e.keyCode === 13){
+            $('#submit').click();
+            console.log('Enter was pressed');
+        }
+    })
+
+        button.addEventListener('click', function(){
+            
+            var input_box = document.querySelector('input');
+
+            if(input_box.value != ""){
+
+
+            var band = input_box.value;
+            input_box.value = "";
+            //encodeURI sets it up with % etc to format it for searching
+            encoded = band.replace(" ", "+");
+            console.log(encoded);
+
+        var url = "https://api.spotify.com/v1/search?q=artist:" + encoded+ "&type=artist"
+        // var url = "http://api.giphy.com/v1/gifs/search?q=" + encoded + "&api_key=dc6zaTOxFJmzC";
+
+        var xhr = new XMLHttpRequest();
+
+
+        xhr.addEventListener('load', function(e) {
+      
+        // xhr.responseText - this is what get's the shit
+        var d = xhr.responseText;
+        var parsed = JSON.parse(d);
+
+        var band_div = document.getElementById('band');
+
+        while (band_div.firstChild) {
+            band_div.removeChild(band_div.firstChild);
+        }
+
+        var band_img = document.createElement('img');
+        band_img.id = "band_img";
+        band_img.src = parsed['artists']['items'][0]['images'][0]['url'];
+        band_div.appendChild(band_img)
+
+        var band_name = document.createElement('h3');
+        band_name.id = "band_name";
+        band_name.innerText = parsed['artists']['items'][0]['name']
+        band_div.appendChild(band_name);
+
+        var band_id = parsed['artists']['items'][0]['id']
+
+        albumFinder(band_id);
+
+        console.log(parsed);
+    })
+        // this just tells you where to go get the data. 
+        xhr.open("GET", url);
+        xhr.send();
+    }
+
+    })
+
+        var albumFinder = function(band_id){
+            
+
+        var url = "https://api.spotify.com/v1/artists/" + band_id + "/albums"
+
+        var xhr = new XMLHttpRequest();
+
+
+        xhr.addEventListener('load', function(e) {
+      
+        // xhr.responseText - this is what get's the shit
+        var d = xhr.responseText;
+        var parsed = JSON.parse(d);
+  
+        var album_div = document.getElementById('album_div');
+
+        while (album_div.firstChild) {
+            album_div.removeChild(album_div.firstChild);
+        }
+
+        var i = 0;
+        while(i < parsed['items'].length && i < 9){
+            var img = document.createElement('img');
+            img.src = parsed['items'][i]['images'][0]['url'];
+            album_div.appendChild(img)
+            i++
+        }
+
+        // var img = document.createElement('img');
+        // img.src = parsed['items'][0]['images'][0]['url'];
+        // album_div.appendChild(img)
+
+
+        
+        console.log(parsed);
+    })
+        // this just tells you where to go get the data. 
+        xhr.open("GET", url);
+        xhr.send();
+    
+
+    }
+
+    //this will press the #next button if you press the down arrowy
+
+
+    // $('body').keydown(function (e){
+    //     if(e.keyCode === 39){
+    //         $('#next').click();
+    //         console.log('Enter was pressed');
+    //     }
+    // })
+
+    // var next_button = document.getElementById('next');
+
+    //     next_button.addEventListener('click', function(){
+    //     var image = document.querySelector('img');
+    //     image.src = image_array[counter];
+    //     counter++
+    //     if(counter === image_array.length){
+    //         counter = 0;
+    //     }
+    // })
+
+    </script>
+</body>
+</html>
