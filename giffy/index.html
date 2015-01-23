@@ -1,0 +1,140 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    body{
+        margin: 0;
+    }
+    img{
+        width: 100%;
+        position: absolute;
+    }
+    #input{
+        position: absolute;
+        margin-top: 3%;
+        text-align: center;
+        width: 100%;
+        height: 30px;
+        z-index: 100;
+    }
+    #poster{
+        text-align: center;
+    }
+
+    #next{
+        position: relative;
+        width: 80px;
+        height: 80px;
+        background-color: blue;
+        float: right;
+        margin-top: 3%;
+        margin-right: 5%;
+        z-index: 100;
+        font-size: 4em;
+        padding-bottom: 5px;
+    }
+    </style>
+</head>
+<body>
+
+
+    <div id = "input">
+        <input type="text">
+        <button id = 'submit'>Click me</button>
+    </div>
+    <button id = "next">&gt</button>
+
+    <img>
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <script>
+
+        var image_array = []
+
+        //this is for the next button
+        var counter = 0;
+        // var url = "http://omdbapi.com/?t=Pulp%20Fiction";
+        var button = document.getElementById('submit');
+
+    $('body').keydown(function (e){
+        if(e.keyCode === 13){
+            $('#submit').click();
+            console.log('Enter was pressed');
+        }
+    })
+
+        button.addEventListener('click', function(){
+            
+            var input_box = document.querySelector('input');
+
+            if(input_box.value != ""){
+
+            image_array = [];
+            counter = 0;
+            var gif = input_box.value;
+            input_box.value = "";
+            //encodeURI sets it up with % etc to format it for searching
+            encoded = gif.replace(" ", "+");
+            console.log(encoded);
+
+                   
+        var url = "http://api.giphy.com/v1/gifs/search?q=" + encoded + "&api_key=dc6zaTOxFJmzC";
+
+        var xhr = new XMLHttpRequest();
+
+
+        xhr.addEventListener('load', function(e) {
+      
+        // xhr.responseText - this is what get's the shit
+        var d = xhr.responseText;
+        var parsed = JSON.parse(d);
+
+        //this grabs the img tag from the html file then sets
+        //the src to the parsed JSON to the key value Poster    
+        var img = document.querySelector('img');
+        img.src = parsed['data'][0]['images']['original']['url'];
+
+        var i = 1
+        while(i < parsed['data'].length){
+            var image = parsed['data'][i]['images']['original']['url'];
+            image_array.push(image);
+            i++;
+        }
+
+        console.log(parsed);
+        console.log(image_array)
+    })
+        // this just tells you where to go get the data. 
+        xhr.open("GET", url);
+        xhr.send();
+    }
+
+    })
+
+    //this will press the #next button if you press the down arrowy
+
+
+    $('body').keydown(function (e){
+        if(e.keyCode === 39){
+            $('#next').click();
+            console.log('Enter was pressed');
+        }
+    })
+
+    var next_button = document.getElementById('next');
+
+        next_button.addEventListener('click', function(){
+        var image = document.querySelector('img');
+        image.src = image_array[counter];
+        counter++
+        if(counter === image_array.length){
+            counter = 0;
+        }
+    })
+
+    </script>
+</body>
+</html>
